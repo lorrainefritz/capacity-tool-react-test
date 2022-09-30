@@ -1,6 +1,28 @@
 {
   "name": "capacitytool-react-test",
   "version": "1.0.0",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lorrainefritz/capacity-tool-react-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lorrainefritz/capacity-tool-react-test/issues"
+  },
+  "homepage": "https://github.com/lorrainefritz/capacity-tool-react-test#readme",
+  "description": "",
   "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.1"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
   }
 }
