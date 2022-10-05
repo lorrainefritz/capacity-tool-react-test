@@ -3,7 +3,7 @@ body table{
     border:   #f8f7f7 ;
 }
 body table thead{
-    background: #f8f7f7;
+    background: #f8f9fa;
 }
 #projectRowComponent td{
     background: #b4d0e3;
@@ -21,4 +21,24 @@ body table thead{
 }
 #head {
     background: #b4d0e3;
+}
+.totalsPercentages{
+    background: #b4d0e3;
+}
+.totals{
+    background: rgb(248,249,250);
+}
+#diagram{
+
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+#diagramLegends{
+    text-align: center;
+}
+
+.form-group{
+    margin-left: 5px;
 }

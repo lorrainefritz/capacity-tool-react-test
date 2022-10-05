@@ -1,4 +1,4 @@
-Commands eventually needed to initiate the project after downloading it from github
+Commands eventually needed to initiate the project after downloading it from GitHub
     npm start
     npm init -y
     npm add react react-dom

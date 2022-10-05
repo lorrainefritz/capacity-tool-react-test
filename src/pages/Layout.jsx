@@ -31,7 +31,6 @@ const Layout = () => {
                         <li className="nav-item">
                             <a className="nav-link" href="/Alerts">Alerts</a>
                         </li>
-
                     </ul>
                 </div>
             </nav>

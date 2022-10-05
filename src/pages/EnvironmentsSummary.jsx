@@ -217,8 +217,8 @@ class FilterableEnvironmentTable extends React.Component {
         return <>
 
 
-                <EnvironmentTable environments={environments} workerNbr={this.state.workerNbr} memCpu={this.state.memCpu}
-                                  memoryMi={this.state.memoryMi}></EnvironmentTable>
+            <EnvironmentTable environments={environments} workerNbr={this.state.workerNbr} memCpu={this.state.memCpu}
+                              memoryMi={this.state.memoryMi}></EnvironmentTable>
 
             <SimulationBar
                 MemoryMi={this.state.memoryMi}
@@ -243,11 +243,6 @@ function EnvironmentTable({environments, workerNbr, memCpu, memoryMi}) {
     })
     return <>
         <table>
-            <thead>
-            <tr>
-
-            </tr>
-            </thead>
             <tbody>
             {rows}
             </tbody>
@@ -271,11 +266,44 @@ function EnvironmentRow({environment, workerNbr, memCpu, memoryMi}) {
 
 function EnvTable({envs, workerNbr, memCpu, memoryMi}) {
     const rowsOfEnvs = []
+    const numberOfPods = []
+    const requestCpu = []
+    const reqCpuPercent = []
+    const limitCpu = []
+    const limitCpuPercent = []
+    const requestMem = []
+    const requestMemPercent = []
+    const limitMem = []
+    const limitMemPercent = []
 
     if (envs != null) {
         envs.forEach(env => {
             rowsOfEnvs.push(<EnvRow key={env.environmentType} env={env}></EnvRow>)
+            numberOfPods.push(env.pods)
+            requestCpu.push(env.requestCpu)
+            reqCpuPercent.push(env.percentageReqCpu)
+            limitCpu.push(env.limitCpu)
+            limitCpuPercent.push(env.percentageLimitCpu)
+            requestMem.push(env.ReqMem)
+            requestMemPercent.push(env.percentageReqMem)
+            limitMem.push(env.limMem)
+            limitMemPercent.push(env.percentageLimMem)
         })
+
+        const totalNumberOfPods = numberOfPods.reduce((a, b) => a + b, 0)
+        const totalRequestCpu = requestCpu.reduce((a, b) => a + b, 0)
+        const totalRequestCpuPercent = reqCpuPercent.reduce((a, b) => a + b, 0)
+        const totalLimitCpu = limitCpu.reduce((a, b) => a + b, 0)
+        const totalLimitCpuPercent = limitCpuPercent.reduce((a, b) => a + b, 0)
+        const totalRequestMem = requestMem.reduce((a, b) => a + b, 0)
+        const totalRequestMemPercent = requestMemPercent.reduce((a, b) => a + b, 0)
+        const totalLimitMem = limitMem.reduce((a, b) => a + b, 0)
+        const totalLimitMemPercent = limitMemPercent.reduce((a, b) => a + b, 0)
+
+        console.log({totalNumberOfPods}, {totalRequestCpu}, {totalRequestCpuPercent}, {totalLimitCpu},
+            {totalLimitCpuPercent}, {totalRequestMem}, {totalRequestMemPercent}, {totalLimitMem}, {totalLimitMemPercent})
+
+
         return <>
             <table className="table">
                 <thead>
@@ -304,11 +332,31 @@ function EnvTable({envs, workerNbr, memCpu, memoryMi}) {
                 </thead>
                 <tbody>
                 {rowsOfEnvs}
+
+
+                <tr className={"totals"}>
+                    <td>Totalisation</td>
+                    <td></td>
+                    <td>{totalNumberOfPods}</td>
+                    <td>{totalRequestCpu}</td>
+                    <td>{totalRequestCpuPercent}%</td>
+                    <td>{totalLimitCpu}</td>
+                    <td>{totalLimitCpuPercent}%</td>
+                    <td>{totalRequestMem}</td>
+                    <td>{totalRequestMemPercent}%</td>
+                    <td>{totalLimitMem}</td>
+                    <td>{totalLimitMemPercent}%</td>
+                </tr>
                 </tbody>
             </table>
-            <div><img className="img-fluid" src={diagram} alt="diagram" width="800" height="800"/></div>
-            <div>Nbr of workers to add : {workerNbr}</div>
-            <div>memCpu : {memCpu} memoryMi: {memoryMi}</div>
+            <div><img className="img-fluid" id="diagram" alt="Responsive image"  src={diagram} alt="diagram" width="800"
+                      height="800"/>
+                <div id="diagramLegends">
+                    < div>Nbr of workers to add : {workerNbr}, memCpu : {memCpu}, memoryMi: {memoryMi}</div>
+                </div>
+
+            </div>
+
         </>
     }
 }
@@ -367,7 +415,7 @@ class SimulationBar extends React.PureComponent {
         const {memCpu} = this.props
         const {memoryMi} = this.props
         return <>
-            <table>
+            <table >
                 <thead>
                 <tr>
                     <th> Simulation Add/Remove workers in full usage</th>

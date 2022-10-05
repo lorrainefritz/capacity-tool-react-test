@@ -151,73 +151,35 @@ const Departments = () => {
 class FilterableDepartmentsTable extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            displayPods: false,
-            projectNameSearch: 'dev'
-        }
-        this.handleProjectNameSearch = this.handleProjectNameSearch.bind(this)
+
     }
 
-    handleDisplayPods(displayPods) {
-        this.setState({displayPods})
-    }
 
-    handleProjectNameSearch(projectNameSearch) {
-        this.setState({projectNameSearch})
-    }
+
 
     render() {
         const {projects} = this.props
-        return <div ClassName="container">
-            <div><SearchBarDepartmentsName projectNameSearch={this.state.projectNameSearch}
-                                           onProjectNameSearchChange={this.handleProjectNameSearch}></SearchBarDepartmentsName>
-            </div>
-            <div><DepartmentsTable projects={projects} displayPods={this.state.displayPods}
-                                   projectNameSearch={this.state.projectNameSearch}></DepartmentsTable></div>
+        return <div>
+
+            <div><DepartmentsTable projects={projects}></DepartmentsTable></div>
 
         </div>
     }
 }
 
-class SearchBarDepartmentsName extends React.PureComponent {
-    constructor(props) {
-        super(props)
 
 
-        this.handleProjectNameSearchChange = this.handleProjectNameSearchChange.bind(this)
-    }
+function DepartmentsTable({projects}) {
+    const [inputValue, setInputValue] = React.useState("");
 
-
-    handleProjectNameSearchChange(e) {
-        this.props.onProjectNameSearchChange(e.target.value)
-    }
-
-
-    render() {
-
-        const {projectNameSearch} = this.props
-        return <>
-            <div id="projectNameSearch">
-
-            <div className="form-outline">
-                <label htmlFor={projectNameSearch}> Project </label>
-                <input className="form-group" type="text" value={projectNameSearch}
-                       onChange={this.handleProjectNameSearchChange}/>
-            </div>
-            </div>
-        </>
-
-    }
-}
-
-
-function DepartmentsTable({projects, displayPods, projectNameSearch}) {
-
+    const onChangeHandler = event => {
+        setInputValue(event.target.value);
+    };
     const rows = []
 
     projects.forEach(project => {
 
-        if (project.projectName.indexOf(projectNameSearch) === -1) {
+        if (project.projectName.indexOf(inputValue) === -1) {
             return
         } else {
 
@@ -225,9 +187,15 @@ function DepartmentsTable({projects, displayPods, projectNameSearch}) {
         }
     })
     return <>
-        <table>
+        <table className={"table"}>
             <thead>
             <tr>
+                <th> Project <input
+                    type="text"
+                    name="name"
+                    onChange={onChangeHandler}
+                    value={inputValue}
+                /></th>
                 <th>projectName</th>
                 <th>Nbr Pods</th>
                 <th>Avl Pods</th>
@@ -252,7 +220,6 @@ function DepartmentsTable({projects, displayPods, projectNameSearch}) {
             {rows}
             </tbody>
         </table>
-
     </>
 }
 
@@ -260,30 +227,13 @@ class ProjectRow extends React.Component {
     constructor(props) {
 
         super(props)
-        this.state = {displayPods: false}
-        this.handleDisplayPods = this.handleDisplayPods.bind(this)
-    }
 
-    handleDisplayPods(e) {
-        this.setState({
-            displayPods: e.target.checked
-        })
     }
 
     render() {
         return <>
-            <div className="container">
 
-                <div className="form-check">
-                    <input type="checkbox" className="form-check-input" id="displayPods"
-                           checked={this.state.displayPods}
-                           onChange={this.handleDisplayPods}></input>
-                    <label htmlFor="displayPods" className="form-check-label"></label>
-                </div>
-
-            </div>
-            <ProjectRowComponent project={this.props.project}
-                                 displayPods={this.state.displayPods}></ProjectRowComponent>
+            <ProjectRowComponent project={this.props.project}></ProjectRowComponent>
         </>
 
 
@@ -291,11 +241,19 @@ class ProjectRow extends React.Component {
 }
 
 
-function ProjectRowComponent({project, displayPods}) {
+function ProjectRowComponent({project}) {
+    const [isToggled, setIsToggled] = React.useState(false);
 
-    if (displayPods) {
+
+    const toggle = React.useCallback(
+        () => setIsToggled(!isToggled),
+        [isToggled, setIsToggled],
+    );
         return <>
             <tr id="projectRowComponent">
+                <td> <button className={"btn"} onClick={toggle}>
+                    <i className="fa fa-plus"></i>
+                </button></td>
                 <td>{project.projectName}</td>
                 <td><EvaluateNbrOfPods pods={project.pods}/></td>
                 <td>{project.avlPods}</td>
@@ -317,33 +275,9 @@ function ProjectRowComponent({project, displayPods}) {
 
             </tr>
             <tr>
-                <td colSpan={18}><PodTable pods={project.pods}></PodTable></td>
+                {isToggled ? <td colSpan={18}><PodTable pods={project.pods}></PodTable></td> : null}
             </tr>
         </>
-    } else {
-        return <tr id="projectRowComponent">
-            <td>{project.projectName}</td>
-            <td><EvaluateNbrOfPods pods={project.pods}/></td>
-            <td>{project.avlPods}</td>
-            <td><IsThereLimits isLimited={project.limits}/></td>
-            <td><IsThereQuotas isWithQuotas={project.quotas}/></td>
-            <td><IsWithRollingUpdate iswithRollingUpdate={project.rollingUpdate}/></td>
-            <td>{project.curCpu}</td>
-            <td>{project.curCpuPercentage}</td>
-            <td>{project.reqCpu}</td>
-            <td>{project.reqCpuPercentage}</td>
-            <td>{project.cpuReqLim}</td>
-            <td>{project.percentageReqLim}</td>
-            <td>{project.curMem}</td>
-            <td>{project.percentageCurMem}</td>
-            <td>{project.reqMem}</td>
-            <td>{project.percentageReqMem}</td>
-            <td>{project.limMem}</td>
-            <td>{project.percentageLimMem}</td>
-
-        </tr>
-
-    }
 }
 
 function EvaluateNbrOfPods({pods}) {
@@ -355,11 +289,11 @@ function EvaluateNbrOfPods({pods}) {
 const IsThereLimits = props => {
     let {isLimited} = props
     if (isLimited) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }
@@ -368,11 +302,11 @@ const IsThereLimits = props => {
 const IsThereQuotas = props => {
     let {isWithQuotas} = props
     if (isWithQuotas) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }
@@ -380,11 +314,11 @@ const IsThereQuotas = props => {
 const IsWithRollingUpdate = props => {
     let {iswithRollingUpdate} = props
     if (iswithRollingUpdate) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }

@@ -244,28 +244,47 @@ function PodsAlertsTable({podsAlerts}) {
 
 
 function ProjectAlertRow({projectAlert}) {
+    const [isToggled, setIsToggled] = React.useState(false);
 
+
+    const toggle = React.useCallback(
+        () => setIsToggled(!isToggled),
+        [isToggled, setIsToggled],
+    );
     return <>
-        <table className="table">
+        <table className="table table-responsive">
             <thead>
-            <th>{projectAlert.projectAlertCategory}</th>
+            <th>
+                <button className={"btn"} onClick={toggle}>
+                    <i className="fa fa-plus"></i>
+                </button>
+                {projectAlert.projectAlertCategory}</th>
             </thead>
             <tbody>
-            <ProjectTable projects={projectAlert.projects}></ProjectTable>
+            {isToggled ? <ProjectTable projects={projectAlert.projects}></ProjectTable> : null}
             </tbody>
         </table>
     </>
 }
 
 function PodAlertRow({podAlert}) {
+    const [isToggled, setIsToggled] = React.useState(false);
 
+
+    const toggle = React.useCallback(
+        () => setIsToggled(!isToggled),
+        [isToggled, setIsToggled],
+    );
     return <>
         <table className="table">
             <thead>
-            <th>{podAlert.podsAlertCategory}</th>
+            <th>
+                <button className={"btn"} onClick={toggle}>
+                    <i className="fa fa-plus"></i>
+                </button>{podAlert.podsAlertCategory}</th>
             </thead>
             <tbody>
-            <PodTable pods={podAlert.pods}></PodTable>
+            {isToggled ? <PodTable pods={podAlert.pods}></PodTable> : null}
             </tbody>
         </table>
     </>
@@ -325,7 +344,6 @@ function PodTable({pods}) {
 const ProjectRow = React.memo(ProjectComponent)
 
 function ProjectComponent({project}) {
-
     return <>
         <tr>
             <td>{project.namespace}</td>
@@ -339,9 +357,10 @@ const PodRow = React.memo(PodComponent)
 function PodComponent({pod}) {
 
     return <>
-        <tr><td>{pod.teamName}</td>
+        <tr>
+            <td>{pod.teamName}</td>
             <td>{pod.teamEmail}</td>
-            <td>{pod.namespace}</td>
+            <td>{pod.nameSpace}</td>
             <td>{pod.podName}</td>
             <td>{pod.countRestart}</td>
             <td>{pod.reasonOfRestart}</td>

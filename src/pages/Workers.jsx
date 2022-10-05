@@ -15,6 +15,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -30,6 +32,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -45,6 +49,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -60,6 +66,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -75,6 +83,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -90,6 +100,8 @@ const WORKERS = [
         percentageReqCpu: 97,
         cpuReqLim: '5344/5500',
         percentageReqLim: 146,
+        usgMem:'5439/22963',
+        percentageUsgMem:24,
         ReqMem: '19660/22964',
         percentageReqMem: 86,
         LimMem: '18532/22964',
@@ -119,56 +131,76 @@ function WorkerTable({workers}) {
     const usgCpuPercent = []
     const reqCpuPercent = []
     const cpuReqLimitPercent = []
+    const usgMemPercent = []
     const reqMemPercent = []
     const limMemPercent = []
     const averages = []
-    let lastCategory = null
     workers.forEach(worker => {
 
-        rows.push(<WorkerNameRow key={lastCategory} workerName={worker.workerName}></WorkerNameRow>)
+
         rows.push(<WorkerRow key={worker.workerName} worker={worker}></WorkerRow>)
         usgCpuPercent.push(worker.percentageUsageCpu)
         reqCpuPercent.push(worker.percentageReqCpu)
         cpuReqLimitPercent.push(worker.percentageReqLim)
+        usgMemPercent.push(worker.percentageUsgMem)
         reqMemPercent.push(worker.percentageReqMem)
         limMemPercent.push(worker.percentageLimMem)
     })
     const averageUsgCpuPercent = usgCpuPercent.reduce((a, b) => a + b, 0) / usgCpuPercent.length;
     const averageReqCpuPercent = reqCpuPercent.reduce((a, b) => a + b, 0) / reqCpuPercent.length;
     const averageCpuReqLimitPercent = cpuReqLimitPercent.reduce((a, b) => a + b, 0) / cpuReqLimitPercent.length;
+    const averageUsgMemPercent = usgMemPercent.reduce((a, b) => a + b, 0)/usgMemPercent.length;
     const averageReqMemPercent = reqMemPercent.reduce((a, b) => a + b, 0) / reqMemPercent.length;
     const averageLimMemPercent = limMemPercent.reduce((a, b) => a + b, 0) / limMemPercent.length;
     averages.push(averageUsgCpuPercent, averageReqCpuPercent, averageCpuReqLimitPercent, averageReqMemPercent, averageLimMemPercent)
     console.log(averageUsgCpuPercent, averageReqCpuPercent, averageCpuReqLimitPercent, averageReqMemPercent, averageLimMemPercent)
 
-    return <div>
-        <table>
+    return <>
+        <table className={"table"}>
             <thead>
             <tr>
-                <th>workerName</th>
-                <th>health</th>
-                <th>nbrPods</th>
-                <th>UsgCpu</th>
-                <th>percentageUsageCpu</th>
+                <th>Worker</th>
+                <th>Health</th>
+                <th>Nbr Pods</th>
+                <th>Usg Cpu</th>
+                <th>%</th>
                 <th>ReqCpu</th>
-                <th>percentageReqCpu</th>
-                <th>cpuReqLim</th>
-                <th>percentageReqLim</th>
-                <th>ReqMem</th>
-                <th>percentageReqMem</th>
-                <th>LimMem</th>
-                <th>percentageLimMem</th>
+                <th>%</th>
+                <th>Cpu [Req/Lim]</th>
+                <th>%</th>
+                <th>Usg mem</th>
+                <th>%</th>
+                <th>Req Mem</th>
+                <th>%</th>
+                <th>Lim Mem</th>
+                <th>%</th>
             </tr>
             </thead>
             <tbody>
             {rows}
-
+            <tr className={"totalsPercentages"}>
+                <td>Total %</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{Math.round(averageUsgCpuPercent)}</td>
+                <td></td>
+                <td>{Math.round(averageReqCpuPercent)}</td>
+                <td></td>
+                <td>{Math.round(averageCpuReqLimitPercent)}</td>
+                <td></td>
+                <td>{Math.round(averageUsgMemPercent)}</td>
+                <td></td>
+                <td>{Math.round(averageReqMemPercent)}</td>
+                <td></td>
+                <td>{Math.round(averageLimMemPercent)}</td>
+            </tr>
             </tbody>
-
-
         </table>
-    </div>
+        </>
 }
+
+
 
 
 
@@ -176,9 +208,7 @@ function WorkerRowComponent({worker}) {
 
     return <tr>
         <td>{worker.workerName}</td>
-
         <td><IsHealthy isHealthy={worker.health}/></td>
-
         <td>{worker.nbrPods}</td>
         <td>{worker.UsgCpu}</td>
         <td>{worker.percentageUsageCpu}</td>
@@ -186,12 +216,12 @@ function WorkerRowComponent({worker}) {
         <td>{worker.percentageReqCpu}</td>
         <td>{worker.cpuReqLim}</td>
         <td>{worker.percentageReqLim}</td>
+        <td>{worker.usgMem}</td>
+        <td>{worker.percentageUsgMem}</td>
         <td>{worker.ReqMem}</td>
         <td>{worker.percentageReqMem}</td>
         <td>{worker.LimMem}</td>
         <td>{worker.percentageLimMem}</td>
-
-
     </tr>
 }
 
@@ -209,11 +239,6 @@ const IsHealthy = props => {
 const WorkerRow = React.memo(WorkerRowComponent)
 
 
-function WorkerNameRow({workerName}) {
-    return <tr>
-
-    </tr>
-}
 
 
 

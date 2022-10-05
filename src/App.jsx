@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./pages/Layout";
-import Home from "./pages/Home";
+import Layout from "./pages/Layout"
+import Home from "./pages/Home"
 import Workers from "./pages/Workers"
 import EnvironmentDetails from "./pages/EnvironmentDetails"
 import EnvironmentsSummary from "./pages/EnvironmentsSummary"
 import Teams from "./pages/Teams"
-import Departments from "./pages/Departments";
-import Alerts from "./pages/Alerts";
+import Departments from "./pages/Departments"
+import Alerts from "./pages/Alerts"
 export default function App() {
     return (
         <BrowserRouter>

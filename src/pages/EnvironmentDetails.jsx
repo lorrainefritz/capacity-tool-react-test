@@ -142,28 +142,7 @@ const PROJECTS = [
     },
 ]
 
-class SearchBar extends React.PureComponent {
-    constructor(props) {
-        super(props)
-        this.handleDisplayPods = this.handleDisplayPods.bind(this)
-    }
 
-    handleDisplayPods(e) {
-        this.props.onHandleDisplayPods(e.target.checked)
-    }
-
-    render() {
-        const {displayPods} = this.props
-        return <div className="container">
-
-            <div className="form-check">
-                <input type="checkbox" className="form-check-input" id="displayPods" checked={displayPods}
-                       onChange={this.handleDisplayPods}></input>
-                <label htmlFor="displayPods" className="form-check-label"></label>
-            </div>
-        </div>
-    }
-}
 
 const EnvironementDetails = () => {
     return <FilterableProjectTable projects={PROJECTS}></FilterableProjectTable>
@@ -173,106 +152,91 @@ const EnvironementDetails = () => {
 class FilterableProjectTable extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            displayPods: false
-        }
-        this.handleDisplayPods = this.handleDisplayPods.bind(this)
-    }
 
-    handleDisplayPods(displayPods) {
-        this.setState({displayPods})
     }
 
     render() {
         const {projects} = this.props
-        return <div>
-           {/* <div><SearchBar displayPods={this.state.displayPods}
-                            onHandleDisplayPods={this.handleProjectNameSearch}></SearchBar></div>*/}
-            <div><ProjectTable projects={projects} displayPods={this.state.displayPods}></ProjectTable></div>
-        </div>
+        return <>
+
+            <ProjectTable projects={projects}></ProjectTable>
+        </>
     }
 }
 
 
-function ProjectTable({projects, displayPods}) {
-
+function ProjectTable({projects}) {
+    const [isAscending, setIsAscending]= React.useState(true);
+    const [isDescending, setIsDescending]=React.useState(false);
     const rows = []
-    /*  let lastCategory = null*/
-    projects.forEach(project => {
 
-        /*  rows.push(<ProjectNameRow key={lastCategory} projectName={project.projectName}></ProjectNameRow>)*/
-       /* rows.push(<ProjectRow key={project.projectName} project={project} displayPods={displayPods}></ProjectRow>)*/
+
+    projects.forEach(project => {
         rows.push(<ProjectRow key={project.projectName} project={project}></ProjectRow>)
     })
-    return <div>
-        <table>
+    return <>
+        <table className={"table"}>
             <thead>
             <tr>
-                <th>projectName</th>
+                <th></th>
+                <th>Projects</th>
                 <th>Nbr Pods</th>
                 <th>Avl Pods</th>
                 <th>Limits</th>
                 <th>quotas</th>
                 <th>Rolling update</th>
                 <th>cur Cpu</th>
-                <th>percentage cur Cpu</th>
+                <th>%</th>
                 <th>ReqCpu</th>
-                <th>percentageReqCpu</th>
+                <th>%</th>
                 <th>cpuReqLim</th>
+                <th>%</th>
                 <th>curMem</th>
-                <th>percentageCurMem</th>
-                <th>percentageReqLim</th>
+                <th>%</th>
                 <th>ReqMem</th>
-                <th>percentageReqMem</th>
+                <th>%</th>
                 <th>LimMem</th>
-                <th>percentageLimMem</th>
+                <th>%</th>
             </tr>
             </thead>
             <tbody>
             {rows}
             </tbody>
         </table>
-    </div>
+    </>
 }
 
 class ProjectRow extends React.Component{
     constructor(props) {
-    super(props)
-        this.state = { displayPods: false }
-        this.handleDisplayPods = this.handleDisplayPods.bind(this)
+        super(props)
     }
-
-    handleDisplayPods(e) {
-        this.setState({
-            displayPods: e.target.checked
-        })
-    }
-
     render() {
         return  <>
-        <div className="container">
-
-            <div className="form-check">
-                <input type="checkbox" className="form-check-input" id="displayPods" checked={this.state.displayPods}
-                       onChange={this.handleDisplayPods}></input>
-                <label htmlFor="displayPods" className="form-check-label"></label>
-            </div>
-        </div>
-            <ProjectRowComponent project={this.props.project} displayPods={this.state.displayPods}></ProjectRowComponent>
+            <ProjectRowComponent project={this.props.project} ></ProjectRowComponent>
 </>
-
-
 
     }
 }
 
 
-function ProjectRowComponent({project, displayPods}) {
 
 
-    if (displayPods) {
-        return <>
+
+function ProjectRowComponent({project}) {
+    const [isToggled, setIsToggled] = React.useState(false);
+
+
+
+    const toggle = React.useCallback(
+        () => setIsToggled(!isToggled),
+        [isToggled, setIsToggled],
+    );
+
+    return <>
             <tr id="projectRowComponent">
+                <td> <button className={"btn"} onClick={toggle}>
+                    <i className="fa fa-plus"></i>
+                </button></td>
                 <td>{project.projectName}</td>
                 <td><EvaluateNbrOfPods pods={project.pods}/></td>
                 <td>{project.avlPods}</td>
@@ -291,36 +255,12 @@ function ProjectRowComponent({project, displayPods}) {
                 <td>{project.percentageReqMem}</td>
                 <td>{project.limMem}</td>
                 <td>{project.percentageLimMem}</td>
-
             </tr>
             <tr>
-                <td colSpan={18}><PodTable pods={project.pods}></PodTable></td>
+                {isToggled ? <td colSpan={18}><PodTable pods={project.pods}></PodTable></td> : null}
             </tr>
         </>
-    } else {
-        return <tr id="projectRowComponent">
-            <td>{project.projectName}</td>
-            <td><EvaluateNbrOfPods pods={project.pods}/></td>
-            <td>{project.avlPods}</td>
-            <td><IsThereLimits isLimited={project.limits}/></td>
-            <td><IsThereQuotas isWithQuotas={project.quotas}/></td>
-            <td><IsWithRollingUpdate iswithRollingUpdate={project.rollingUpdate}/></td>
-            <td>{project.curCpu}</td>
-            <td>{project.curCpuPercentage}</td>
-            <td>{project.reqCpu}</td>
-            <td>{project.reqCpuPercentage}</td>
-            <td>{project.cpuReqLim}</td>
-            <td>{project.percentageReqLim}</td>
-            <td>{project.curMem}</td>
-            <td>{project.percentageCurMem}</td>
-            <td>{project.reqMem}</td>
-            <td>{project.percentageReqMem}</td>
-            <td>{project.limMem}</td>
-            <td>{project.percentageLimMem}</td>
 
-        </tr>
-
-    }
 }
 
 function EvaluateNbrOfPods({pods}) {
@@ -332,11 +272,13 @@ function EvaluateNbrOfPods({pods}) {
 const IsThereLimits = props => {
     let {isLimited} = props
     if (isLimited) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
+        /*<><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        </>*/
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }
@@ -345,11 +287,11 @@ const IsThereLimits = props => {
 const IsThereQuotas = props => {
     let {isWithQuotas} = props
     if (isWithQuotas) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }
@@ -357,11 +299,11 @@ const IsThereQuotas = props => {
 const IsWithRollingUpdate = props => {
     let {iswithRollingUpdate} = props
     if (iswithRollingUpdate) {
-        return <div><img className="img-fluid" src={isWithLimits} alt="isWithLimits" width="25" height="25"/>
+        return <div><i className="fa fa-check-square-o" aria-hidden="true"></i>
         </div>
 
     } else {
-        return <div><img className="img-fluid" src={noLimits} alt="noLimits" width="25" height="25"/></div>
+        return <div><i className="fa fa-ban" aria-hidden="true"></i></div>
 
     }
 }
@@ -372,23 +314,11 @@ const IsWithRollingUpdate = props => {
 
 function PodTable({pods}) {
     const rowsOfPods = []
-    console.log(pods.length)
-    const podsArray = {
-        pods: [{
-            podName: "capacity-tool-7c74d545bd-sd65d", restart: 0, cpuReqLim: "cpu[0/0]", memReqLim: "mem[0/0]",
-            usgCpu: "0/0", maxCpu: "0/0", usgMem: "23/0", maxMem: "0/0"
-        }, {
-            podName: "capacity-tool-7c74d545bd-sd65d", restart: 0, cpuReqLim: "cpu[0/0]", memReqLim: "mem[0/0]",
-            usgCpu: "0/0", maxCpu: "0/0", usgMem: "23/0", maxMem: "0/0"
-        }]
-    }
-    const output = podsArray.pods.map(pod => pod.podName)
-
     if (pods != null) {
         pods.forEach(pod => {
             rowsOfPods.push(<PodRow key={pod.podName} pod={pod}></PodRow>)
         })
-        return <div>
+        return <>
             <table className="table">
                 <thead>
                 <tr>
@@ -406,7 +336,7 @@ function PodTable({pods}) {
                 {rowsOfPods}
                 </tbody>
             </table>
-        </div>
+        </>
     }
 }
 
@@ -426,11 +356,7 @@ function PodRowComponent({pod}) {
 }
 
 
-
-
 const PodRow = React.memo(PodRowComponent)
-
-
 
 
 
